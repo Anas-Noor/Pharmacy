@@ -1,12 +1,14 @@
 package View.Admin;
 
 import Service.AdminLoginServices;
-import View.Home;
+import View.EmployeeLogin;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Admin{
+
+        public static String admin_name;
 
     public Admin(){
 
@@ -30,12 +32,11 @@ public class Admin{
         JButton login = new JButton("Login");
         login.setForeground(Color.BLACK);
         login.setBackground(Color.ORANGE);
-        JButton exit = new JButton("Exit");
+        JButton exit = new JButton("Back");
         exit.setForeground(Color.BLACK);
         exit.setBackground(Color.ORANGE);
 //                                                                                  heading field
         mainHeading(admin_frame);
-
 
 //                                                                                  INPUTS SIZE...
         name_label.setBounds(500,350,120,40);
@@ -64,19 +65,21 @@ public class Admin{
 //                                                                                   Buttons on click
 
           login.addActionListener(el -> {
-              Boolean bool1 =  AdminLoginServices.adminLogin_details(name_text.getText(), String.valueOf(password.getPassword()));
-              if(bool1) {
+
+              Boolean loginResult = AdminLoginServices.adminLogin_details(name_text.getText(),String.valueOf(password.getPassword()));
+              if(loginResult) {
+                  admin_name = name_text.getText();
                   admin_frame.dispose();
                   AdminFunctionality_UI admin = new AdminFunctionality_UI();
               }
               else{
-                  JOptionPane.showMessageDialog(admin_frame,"Invalid Username OR Password");
+                  JOptionPane.showMessageDialog(admin_frame,"Invalid Username AND Password");
               }
           });
 
           exit.addActionListener(el->{
             admin_frame.dispose();
-            Home home = new Home();
+              EmployeeLogin emp_login = new EmployeeLogin();
         });
     }
 

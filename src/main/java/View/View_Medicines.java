@@ -1,14 +1,9 @@
 package View;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.util.List;
 
-import Model.Product;
-import Service.GetAllMedicines;
 import Service.ProductService;
 
 public class View_Medicines {
@@ -22,7 +17,7 @@ public class View_Medicines {
 
         JButton exit;
         JPanel panel_medicine = new JPanel();
-        String[] columns = new String[] {"MedicineName", "Varient", "Price", "Quantity"};
+        String[] columns = new String[] {"Barcode","Medicine Name","Medicine Varient", "Mediicine Price", " Medicine Quantity"};
 
 
         ProductService productService = new ProductService();
@@ -35,7 +30,7 @@ public class View_Medicines {
         columnModel.getColumn(1).setPreferredWidth(40);
         columnModel.getColumn(2).setPreferredWidth(40);
         columnModel.getColumn(3).setPreferredWidth(100);
-//        columnModel.getColumn(4).setPreferredWidth(100);
+        columnModel.getColumn(4).setPreferredWidth(100);
 
         medicine.setRowHeight(medicine.getRowHeight()+10);
 
@@ -46,7 +41,7 @@ public class View_Medicines {
         labelHead.setFont(new Font("Arial",Font.TRUETYPE_FONT,40));
 
 //
-        exit = new JButton("Exit");
+        exit = new JButton("Back");
         exit.setBounds(1250,3,90,40);
         exit.setBackground(Color.ORANGE);
         exit.setForeground(Color.BLACK);
@@ -66,7 +61,8 @@ public class View_Medicines {
     }
     public void workingOf_ExitButton(JButton exit){
         exit.addActionListener(el->{
-            Home home = new Home();
+            viewMedicine_frame.dispose();
+            Employee_Functionality employeeFunctionality = new Employee_Functionality();
         });
 
     }

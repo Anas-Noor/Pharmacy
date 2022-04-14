@@ -1,7 +1,7 @@
 package View.Admin;
 
 import Model.Product;
-import dao.UpdateMedicine_Dao;
+import dao.ProductFunctionality_Dao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,7 @@ public class UpdateMedicine {
         p_id.setFont(new Font("Serif",Font.BOLD,18));
         p_id.setForeground(Color.ORANGE);
         p_idText = new JTextField();
-        p_idText.setText(String.valueOf(updateData.getId()));
+        p_idText.setText(String.valueOf(updateData.getBarCode()));
         p_idText.setEnabled(false);
 
         p_name = new JLabel(" Name :");
@@ -49,7 +49,7 @@ public class UpdateMedicine {
         p_price.setFont(new Font("Serif",Font.BOLD,18));
         p_price.setForeground(Color.ORANGE);
         p_priceText = new JTextField();
-        p_priceText.setText(String.valueOf(updateData.getMedicine_price()));
+        p_priceText.setText(String.valueOf(updateData.getMedicine_Saleprice()));
 //                                                                         Label size.....
         p_id.setBounds(450,250,150,30);
         p_name.setBounds(450,300,100,30);
@@ -104,18 +104,22 @@ public class UpdateMedicine {
         updateProduct_frame.setVisible(true);
 
         updateProduct.addActionListener(e->{
-            Long id = Long.parseLong(p_idText.getText());
-            String updatedName = p_nameText.getText();
-            String updatedVarient = p_variantText.getText();
-            Double updatedPrice= Double.parseDouble(p_priceText.getText());
-            Integer updatedquantity = Integer.parseInt(p_quantityText.getText());
+            try {
+                Long id = Long.parseLong(p_idText.getText());
+                String updatedName = p_nameText.getText();
+                String updatedVarient = p_variantText.getText();
+                Double updatedPrice = Double.parseDouble(p_priceText.getText());
+                Integer updatedquantity = Integer.parseInt(p_quantityText.getText());
 
-            Product updatedData = new Product(id,updatedName,updatedVarient,updatedPrice,updatedquantity);
+                Product updatedData = new Product(id, updatedName, updatedVarient, null, updatedPrice, updatedquantity);
 
-            UpdateMedicine_Dao updateMedicine_dao = new UpdateMedicine_Dao();
-            updateMedicine_dao.updateMedicine(updatedData);
+                ProductFunctionality_Dao updateMedicine_dao = new ProductFunctionality_Dao();
+                updateMedicine_dao.updateMedicine(updatedData);
 
-            JOptionPane.showMessageDialog(updateProduct_frame,"Medicine Updated");
+                JOptionPane.showMessageDialog(updateProduct_frame, "Medicine Updated");
+            }catch (Exception error){
+                JOptionPane.showMessageDialog(updateProduct_frame,"Invalid data");
+            }
 
         });
 

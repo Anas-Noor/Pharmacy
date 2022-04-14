@@ -2,9 +2,10 @@ package View.Admin;
 
 import Model.Product;
 import Service.ProductService;
-import dao.DeleteMedicine;
+import dao.ProductFunctionality_Dao;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -19,9 +20,10 @@ public class Admin_ViewMedicine  {
 
     public JFrame viewMedicine_frame = new JFrame("Medicine");
     public JTable medicine;
+    public static Boolean deleterowError;
+    DefaultTableModel medicineDefaultTable;
     JButton update,delete;
     JButton exit;
-//    JPanel panel_medicine = new JPanel();
 
 
     Admin_ViewMedicine(){
@@ -31,9 +33,10 @@ public class Admin_ViewMedicine  {
         String[] columns = new String[] {"Medicine Code", "Medicine Name", "Medicine Varient", "Medicine price","Medicine Quantity"};
 
         ProductService productService = new ProductService();
-        Object [][] data = productService.getAllMedicines();
+        Object [][] data = productService.getAllMedicineForUpdate();
 
-        medicine = new JTable(data, columns);
+        medicineDefaultTable = new DefaultTableModel(data,columns);
+        medicine = new JTable(medicineDefaultTable);
 
         medicine.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         for (int col = 0; col < medicine.getColumnCount(); col++)
@@ -68,7 +71,7 @@ public class Admin_ViewMedicine  {
 
 //
 
-        exit = new JButton("Exit");
+        exit = new JButton("Back");
         exit.setBounds(1250,3,90,40);
         exit.setBackground(Color.ORANGE);
         exit.setForeground(Color.BLACK);
@@ -95,14 +98,18 @@ public class Admin_ViewMedicine  {
                 int row = medicine.rowAtPoint(e.getPoint());
                 int col = 0;
                 if(row >= 0) {
-                    Long  id= (Long) medicine.getModel().getValueAt(row, col);
-                    String medicine_name = (String) medicine.getModel().getValueAt(row,col+1);
-                    String medicine_varient = (String) medicine.getModel().getValueAt(row,col+2);
-                    Double medicine_price = (Double) medicine.getModel().getValueAt(row,col+3);
-                    Integer medicine_quantity = (Integer) medicine.getModel().getValueAt(row,col+4);
+                    try {
+                        Long id = (Long) medicine.getModel().getValueAt(row, col);
+                        String medicine_name = (String) medicine.getModel().getValueAt(row, col + 1);
+                        String medicine_varient = (String) medicine.getModel().getValueAt(row, col + 2);
+                        Double medicine_price = Double.parseDouble(medicine.getModel().getValueAt(row, col + 3).toString());
+                        Integer medicine_quantity = (Integer) medicine.getModel().getValueAt(row, col + 4);
 
-                    updateProduct = new Product(id,medicine_name,medicine_varient,medicine_price,medicine_quantity);
-                    medicineCode_Delete.add(id);
+                        updateProduct = new Product(id, medicine_name, medicine_varient, null, medicine_price, medicine_quantity);
+                        medicineCode_Delete.add(id);
+                    }catch (Exception err){
+                        System.out.println(err);
+                    }
                 }
             }
             @Override
@@ -120,6 +127,7 @@ public class Admin_ViewMedicine  {
                 JOptionPane.showMessageDialog(viewMedicine_frame,"First Select a product to update");
             }
             else {
+                viewMedicine_frame.dispose();
                 UpdateMedicine update = new UpdateMedicine(updateProduct);
                 updateProduct = null;
             }
@@ -127,9 +135,28 @@ public class Admin_ViewMedicine  {
 
         delete.addActionListener(el->{
             if(medicineCode_Delete.size() != 0){
-                DeleteMedicine.delete_Medicines(medicineCode_Delete);
-                Admin_ViewMedicine view = new Admin_ViewMedicine();
-                JOptionPane.showMessageDialog(viewMedicine_frame,"Press Ok to DELETE");
+                deleterowError = true;
+                updateProduct = null;
+                ProductFunctionality_Dao functionality_dao = new ProductFunctionality_Dao();
+
+
+                if(deleterowError) {
+
+                    int option = JOptionPane.showConfirmDialog(viewMedicine_frame, "Press Ok to Delete", "Delete Medicine", JOptionPane.OK_CANCEL_OPTION);
+                    if(option == JOptionPane.OK_OPTION) {
+                        functionality_dao.delete_Medicines(medicineCode_Delete);
+
+                        medicineDefaultTable = (DefaultTableModel) medicine.getModel();
+                        medicineDefaultTable.setRowCount(0);
+                        productService.addingData(medicineDefaultTable,medicine);
+
+                        deleterowError = false;
+                    }
+
+                }
+
+                medicineCode_Delete.clear();
+
             }
             else{
                 JOptionPane.showMessageDialog(viewMedicine_frame,"First choose the medicine to delete");
@@ -148,7 +175,13 @@ public class Admin_ViewMedicine  {
     }
     public void workingOf_ExitButton(JButton exit) {
         exit.addActionListener(el->{
+            viewMedicine_frame.dispose();
             AdminFunctionality_UI admin = new AdminFunctionality_UI();
         });
+    }
+
+    public static void errorOnDeleteProduct(){
+        deleterowError = false;
+        JOptionPane.showMessageDialog(null,"Cannot delete the product\n \t first remove it from cart");
     }
 }

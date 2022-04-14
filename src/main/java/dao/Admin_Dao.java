@@ -3,11 +3,11 @@ package dao;
 import java.sql.ResultSet;
 import java.util.HashMap;
 
+public interface Admin_Dao {
 
-public class AdminLogin_Dao {
-
-    public static HashMap<String ,String> getAdminDetail(){
-        HashMap<String ,String> loginRequirements = new HashMap();
+//                                                                      retrieve data from admin table DB
+    static HashMap<String ,String> getAdminDetail(){
+        HashMap<String,String> loginRequirements = new HashMap();
 
         try{
             ResultSet rs = DBService.query("SELECT * FROM adminlogin");
@@ -15,13 +15,14 @@ public class AdminLogin_Dao {
                 assert rs != null;
                 if(!rs.next())
                     break;
-                        loginRequirements.put(rs.getString("username"),rs.getString("password"));
+                loginRequirements.put(rs.getString("username"),rs.getString("password"));
             }
+            DBService.con.close();
         }catch (Exception e)
         {
             System.out.println(e);
         }
+
         return loginRequirements;
     }
-
 }
